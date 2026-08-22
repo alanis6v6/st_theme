@@ -5,7 +5,7 @@ SillyTavern 擴充，搭配角色卡《性別不是限制，性吸引力才是�
 ## 安裝
 
 1. 酒館左側選單 → **Extensions**（插頭圖示）→ **Install Extension**
-2. 貼上這個 repo 的網址：`https://github.com/alanis6v6/st-gender-not-limit-theme`
+2. 貼上這個 repo 的網址：`https://github.com/alanis6v6/st_theme`
 3. 安裝完成後，在 Extensions 清單裡確認「性別不是限制主題」是**啟用**狀態
 4. 打開《性別不是限制，性吸引力才是》這張卡的聊天，畫面會自動套用主題；切到別的角色聊天會自動變回原本樣子
 
