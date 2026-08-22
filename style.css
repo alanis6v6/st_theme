@@ -1,0 +1,124 @@
+/* 性別不是限制主題 — scoped entirely under body.gnl-theme-active, which
+   index.js toggles on/off as the active chat changes. Every selector below
+   is deliberately prefixed with that class so this stylesheet - loaded
+   globally the instant the extension is enabled, per SillyTavern's own
+   manifest.css loading - is a visual no-op in every other chat. */
+
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Noto+Serif+TC:wght@400;500;600;700&display=swap');
+
+/* ---- palette (mirrors the card's own regex-rendered <style> block) ---- */
+body.gnl-theme-active {
+    --gnl-bg: #0c0709;
+    --gnl-panel: #160e16;
+    --gnl-panel-2: #1b1017;
+    --gnl-gold: #a97945;
+    --gnl-gold-bright: #c99c5f;
+    --gnl-text: #efe2ce;
+    --gnl-text-dim: #cbb9aa;
+    --gnl-wine: #6f293f;
+
+    /* --sheldWidth is set as an inline style on <html> by ST's own "chat
+       width" slider (power-user.js). A plain declaration here still wins
+       for #sheld's *own* computed value, because #sheld inherits from body
+       (its nearer ancestor with an explicit rule) rather than from <html> -
+       direct declarations always beat inheritance regardless of !important.
+       Kept anyway as a defensive belt-and-braces measure. */
+    --sheldWidth: min(96vw, 900px) !important;
+}
+
+/* ---- top bar ---- */
+body.gnl-theme-active #top-bar {
+    background: linear-gradient(180deg, var(--gnl-panel-2), var(--gnl-bg)) !important;
+    border-bottom: 1px solid rgba(169, 121, 69, .4);
+    box-shadow: 0 2px 24px rgba(0, 0, 0, .5) !important;
+}
+body.gnl-theme-active #top-bar,
+body.gnl-theme-active #top-bar .drawer-icon,
+body.gnl-theme-active #top-bar i {
+    color: var(--gnl-text-dim) !important;
+}
+body.gnl-theme-active #top-bar .drawer-icon:hover {
+    color: var(--gnl-gold-bright) !important;
+}
+
+/* ---- chat backdrop ---- */
+body.gnl-theme-active #sheld,
+body.gnl-theme-active #chat {
+    background:
+        radial-gradient(circle at 50% 0%, rgba(111, 41, 63, .16), transparent 55%),
+        var(--gnl-bg) !important;
+}
+
+/* ---- strip SillyTavern's own per-message framing so only the card's own
+   gold double-ring frame reads as "the box" - no default background/border
+   competing with it underneath. Functional bits (name, avatar, timestamp,
+   edit/swipe controls) are left alone, only the message's own box look is
+   reset. ---- */
+body.gnl-theme-active .mes {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+body.gnl-theme-active .mes_block {
+    background: transparent !important;
+}
+body.gnl-theme-active .mes .ch_name,
+body.gnl-theme-active .mes .timestamp {
+    color: var(--gnl-text-dim) !important;
+}
+
+/* ---- widen the card's own regex-rendered elements to match the wider
+   chat column - their width is set inline by the regex output itself
+   (min(100%,420px) etc.), calibrated for a narrow mobile chat bubble, so it
+   needs its own !important override here rather than just widening the
+   outer column and leaving the card stranded at its old mobile width. ---- */
+body.gnl-theme-active .rt-shell,
+body.gnl-theme-active .rt-frame-head,
+body.gnl-theme-active .rt-footer.rt-frame-foot,
+body.gnl-theme-active .rt-body,
+body.gnl-theme-active .rt-mid {
+    width: min(94%, 640px) !important;
+}
+body.gnl-theme-active .rt-wheel-section {
+    width: min(94%, 460px) !important;
+}
+
+/* ---- chat input ---- */
+body.gnl-theme-active #send_form {
+    background: var(--gnl-panel) !important;
+    border: 1px solid var(--gnl-gold) !important;
+    box-shadow: inset 0 0 0 1px rgba(184, 137, 78, .25) !important;
+}
+body.gnl-theme-active #send_textarea {
+    background: transparent !important;
+    color: var(--gnl-text) !important;
+    font-family: 'Noto Serif TC', 'Songti TC', serif;
+    caret-color: var(--gnl-gold-bright);
+}
+body.gnl-theme-active #send_textarea::placeholder {
+    color: #8a7468 !important;
+}
+body.gnl-theme-active #leftSendForm > div,
+body.gnl-theme-active #rightSendForm > div {
+    color: var(--gnl-text-dim) !important;
+}
+body.gnl-theme-active #leftSendForm > div:hover,
+body.gnl-theme-active #rightSendForm > div:hover {
+    color: var(--gnl-gold-bright) !important;
+}
+
+/* ---- quick reply bar ---- */
+body.gnl-theme-active #qr--bar {
+    background: transparent !important;
+}
+body.gnl-theme-active .qr--button {
+    background: linear-gradient(180deg, var(--gnl-panel-2), var(--gnl-panel)) !important;
+    border: 1px solid rgba(169, 121, 69, .5) !important;
+    color: var(--gnl-text-dim) !important;
+    font-family: 'Noto Serif TC', 'Songti TC', serif;
+}
+body.gnl-theme-active .qr--button:hover {
+    border-color: var(--gnl-gold-bright) !important;
+    color: #f0d6ad !important;
+    box-shadow: 0 0 10px rgba(201, 156, 95, .25) !important;
+}

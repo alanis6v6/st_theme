@@ -1,0 +1,12 @@
+{
+    "display_name": "性別不是限制主題",
+    "loading_order": 100,
+    "requires": [],
+    "optional": [],
+    "js": "index.js",
+    "css": "style.css",
+    "author": "alanis6v6",
+    "version": "1.0.0",
+    "homePage": "https://github.com/alanis6v6/st-gender-not-limit-theme",
+    "auto_update": true
+}
