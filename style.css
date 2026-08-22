@@ -24,29 +24,105 @@ body.gnl-theme-active {
        direct declarations always beat inheritance regardless of !important.
        Kept anyway as a defensive belt-and-braces measure. */
     --sheldWidth: min(96vw, 900px) !important;
+    --gnl-corner: #c69b5f;
 }
 
-/* ---- top bar ---- */
-body.gnl-theme-active #top-bar {
+/* ---- fallback canvas: whatever ST paints behind everything else (the
+   html/body base color) is also switched to the theme's near-black instead
+   of ST's default grey, so no plain-grey sliver can show through at the
+   edges while this theme is active. ---- */
+html:has(> body.gnl-theme-active),
+body.gnl-theme-active {
+    background-color: var(--gnl-bg) !important;
+}
+
+/* ---- top icon rows: the drawer-icon toolbar (the "plug" row, #top-bar)
+   and its expanded panel (#top-settings-holder) both get the same gold
+   gradient bar + thin gold-line icon treatment, with a hover glow/lift and
+   a quick press animation on click so the row reads as part of the card's
+   gold-on-wine styling instead of ST's default grey chrome. ---- */
+body.gnl-theme-active #top-bar,
+body.gnl-theme-active #top-settings-holder {
     background: linear-gradient(180deg, var(--gnl-panel-2), var(--gnl-bg)) !important;
     border-bottom: 1px solid rgba(169, 121, 69, .4);
     box-shadow: 0 2px 24px rgba(0, 0, 0, .5) !important;
 }
 body.gnl-theme-active #top-bar,
 body.gnl-theme-active #top-bar .drawer-icon,
-body.gnl-theme-active #top-bar i {
-    color: var(--gnl-text-dim) !important;
+body.gnl-theme-active #top-bar i,
+body.gnl-theme-active #top-settings-holder,
+body.gnl-theme-active #top-settings-holder .drawer-icon,
+body.gnl-theme-active #top-settings-holder i {
+    color: var(--gnl-gold) !important;
 }
-body.gnl-theme-active #top-bar .drawer-icon:hover {
+body.gnl-theme-active #top-bar .drawer-icon,
+body.gnl-theme-active #top-settings-holder .drawer-icon {
+    transition: color .2s ease, filter .2s ease, transform .2s ease;
+}
+body.gnl-theme-active #top-bar .drawer-icon:hover,
+body.gnl-theme-active #top-settings-holder .drawer-icon:hover {
+    color: var(--gnl-gold-bright) !important;
+    filter: drop-shadow(0 0 6px rgba(201, 156, 95, .55));
+    transform: translateY(-1px) scale(1.12);
+}
+body.gnl-theme-active #top-bar .drawer-icon:active,
+body.gnl-theme-active #top-settings-holder .drawer-icon:active {
+    transition: transform .08s ease;
+    transform: scale(.86);
+    filter: drop-shadow(0 0 2px rgba(201, 156, 95, .8));
+}
+body.gnl-theme-active #top-settings-holder .drawer-icon.openIcon {
     color: var(--gnl-gold-bright) !important;
 }
 
-/* ---- chat backdrop ---- */
-body.gnl-theme-active #sheld,
-body.gnl-theme-active #chat {
-    background:
+/* ---- chat backdrop: the whole chat room, not just each message, wears
+   the card's own gold double-ring frame (border + inset single line +
+   inset double line, per the .rt-frame rules baked into the card's regex
+   output) plus the same hand-drawn corner flourish baked into that frame,
+   reproduced here as 4 mirrored SVG corner ornaments so the entire chat
+   window reads as one continuation of the card, not a plain box around it. ---- */
+body.gnl-theme-active #sheld {
+    /* #sheld is already positioned (ST docks it with position:fixed) so the
+       corner ornaments below can anchor to it via position:absolute without
+       this rule touching `position` itself - overriding it to `relative`
+       would break ST's own fixed docking of the chat panel. */
+    border: 1px solid var(--gnl-gold) !important;
+    border-radius: 6px;
+    box-shadow:
+        inset 0 0 0 3px var(--gnl-panel-2),
+        inset 0 0 0 4px rgba(184, 137, 78, .42),
+        0 10px 30px rgba(14, 4, 12, .35) !important;
+    background-color: var(--gnl-bg) !important;
+    background-image:
         radial-gradient(circle at 50% 0%, rgba(111, 41, 63, .16), transparent 55%),
-        var(--gnl-bg) !important;
+        url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cGF0aCBkPSJNMyA0OEM2IDE5IDE5IDYgNDggM00zIDY3QzEzIDMxIDMxIDEzIDY3IDNNNyA4N2M4LTMwIDI2LTQ4IDU2LTU2TTE2IDE2YzE3IDAgMjQgNyAyNCAyNEMyMyA0MCAxNiAzMyAxNiAxNlptMjcgMjdjMTctMiAyNyA2IDI5IDIzLTE3IDItMjctNi0yOS0yM1pNOSA1MmMxMiAxIDE5IDggMjAgMjAtMTItMS0xOS04LTIwLTIwWiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjYzY5YjVmIiBzdHJva2Utd2lkdGg9IjEiLz48Y2lyY2xlIGN4PSIxNiIgY3k9IjE2IiByPSIzIiBmaWxsPSJub25lIiBzdHJva2U9IiNjNjliNWYiLz48L3N2Zz4="),
+        url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxMDAsMCkgc2NhbGUoLTEsMSkiPjxwYXRoIGQ9Ik0zIDQ4QzYgMTkgMTkgNiA0OCAzTTMgNjdDMTMgMzEgMzEgMTMgNjcgM003IDg3YzgtMzAgMjYtNDggNTYtNTZNMTYgMTZjMTcgMCAyNCA3IDI0IDI0QzIzIDQwIDE2IDMzIDE2IDE2Wm0yNyAyN2MxNy0yIDI3IDYgMjkgMjMtMTcgMi0yNy02LTI5LTIzWk05IDUyYzEyIDEgMTkgOCAyMCAyMC0xMi0xLTE5LTgtMjAtMjBaIiBmaWxsPSJub25lIiBzdHJva2U9IiNjNjliNWYiIHN0cm9rZS13aWR0aD0iMSIvPjxjaXJjbGUgY3g9IjE2IiBjeT0iMTYiIHI9IjMiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2M2OWI1ZiIvPjwvZz48L3N2Zz4="),
+        url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgwLDEwMCkgc2NhbGUoMSwtMSkiPjxwYXRoIGQ9Ik0zIDQ4QzYgMTkgMTkgNiA0OCAzTTMgNjdDMTMgMzEgMzEgMTMgNjcgM003IDg3YzgtMzAgMjYtNDggNTYtNTZNMTYgMTZjMTcgMCAyNCA3IDI0IDI0QzIzIDQwIDE2IDMzIDE2IDE2Wm0yNyAyN2MxNy0yIDI3IDYgMjkgMjMtMTcgMi0yNy02LTI5LTIzWk05IDUyYzEyIDEgMTkgOCAyMCAyMC0xMi0xLTE5LTgtMjAtMjBaIiBmaWxsPSJub25lIiBzdHJva2U9IiNjNjliNWYiIHN0cm9rZS13aWR0aD0iMSIvPjxjaXJjbGUgY3g9IjE2IiBjeT0iMTYiIHI9IjMiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2M2OWI1ZiIvPjwvZz48L3N2Zz4="),
+        url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxMDAsMTAwKSBzY2FsZSgtMSwtMSkiPjxwYXRoIGQ9Ik0zIDQ4QzYgMTkgMTkgNiA0OCAzTTMgNjdDMTMgMzEgMzEgMTMgNjcgM003IDg3YzgtMzAgMjYtNDggNTYtNTZNMTYgMTZjMTcgMCAyNCA3IDI0IDI0QzIzIDQwIDE2IDMzIDE2IDE2Wm0yNyAyN2MxNy0yIDI3IDYgMjkgMjMtMTcgMi0yNy02LTI5LTIzWk05IDUyYzEyIDEgMTkgOCAyMCAyMC0xMi0xLTE5LTgtMjAtMjBaIiBmaWxsPSJub25lIiBzdHJva2U9IiNjNjliNWYiIHN0cm9rZS13aWR0aD0iMSIvPjxjaXJjbGUgY3g9IjE2IiBjeT0iMTYiIHI9IjMiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2M2OWI1ZiIvPjwvZz48L3N2Zz4=") !important;
+    background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, no-repeat !important;
+    background-position: 50% 0%, 6px 6px, calc(100% - 6px) 6px, 6px calc(100% - 6px), calc(100% - 6px) calc(100% - 6px) !important;
+    background-size: auto, 42px 42px, 42px 42px, 42px 42px, 42px 42px !important;
+}
+/* the two inset rings from .rt-frame::before/::after, reproduced on #sheld
+   itself so the same "gold hairline + wine double-line" frame wraps the
+   whole chat, not just each message */
+body.gnl-theme-active #sheld::before,
+body.gnl-theme-active #sheld::after {
+    content: '';
+    position: absolute;
+    inset: 7px;
+    pointer-events: none;
+    z-index: 1;
+}
+body.gnl-theme-active #sheld::before {
+    border: 1px solid rgba(202, 162, 100, .36);
+}
+body.gnl-theme-active #sheld::after {
+    inset: 10px;
+    border: 3px double rgba(106, 43, 61, .78);
+}
+body.gnl-theme-active #chat {
+    background: transparent !important;
 }
 
 /* ---- strip SillyTavern's own per-message framing so only the card's own
