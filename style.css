@@ -25,6 +25,17 @@ body.gnl-theme-active {
        Kept anyway as a defensive belt-and-braces measure. */
     --sheldWidth: min(96vw, 900px) !important;
     --gnl-corner: #c69b5f;
+
+    /* Frame scale, kept in clamp()s (not fixed px) so the whole outer
+       frame - border, double ring, corner flourishes - grows and shrinks
+       with the viewport the same way #sheld's own width does (ST already
+       drives #sheld's width off --sheldWidth, min(96vw,900px) above), so
+       it stays proportionate on a phone and on a wide desktop alike
+       instead of the small fixed corner size looking lost against a
+       nearly-900px-wide frame. */
+    --gnl-frame-inset-1: clamp(8px, 1.4vw, 16px);
+    --gnl-frame-inset-2: clamp(13px, 2.1vw, 24px);
+    --gnl-frame-corner: clamp(34px, 5.2vw, 64px);
 }
 
 /* ---- fallback canvas: whatever ST paints behind everything else (the
@@ -107,15 +118,21 @@ body.gnl-theme-active #top-settings-holder .drawer-icon.openIcon {
    reproduced here as 4 mirrored SVG corner ornaments so the entire chat
    window reads as one continuation of the card, not a plain box around it. ---- */
 body.gnl-theme-active #sheld {
-    /* #sheld is already positioned (ST docks it with position:fixed) so the
-       corner ornaments below can anchor to it via position:absolute without
-       this rule touching `position` itself - overriding it to `relative`
-       would break ST's own fixed docking of the chat panel. */
-    border: 1px solid var(--gnl-gold) !important;
+    /* #sheld is already positioned (ST docks it with position:fixed) and its
+       width already tracks --sheldWidth (ST's own var, min(96vw,900px) per
+       the note above) - this rule only adds the frame *on top of* that
+       existing, already-responsive box. It never resizes or repositions
+       #sheld itself, so the frame's outer edge stays exactly at ST's own
+       chat boundary (no extra margin added around it) at every viewport
+       size, and the corner ornaments below anchor to it via
+       position:absolute without this rule touching `position` itself -
+       overriding it to `relative` would break ST's own fixed docking of
+       the chat panel. */
+    border: 2px solid var(--gnl-gold) !important;
     border-radius: 6px;
     box-shadow:
-        inset 0 0 0 3px var(--gnl-panel-2),
-        inset 0 0 0 4px rgba(184, 137, 78, .42),
+        inset 0 0 0 4px var(--gnl-panel-2),
+        inset 0 0 0 6px rgba(184, 137, 78, .42),
         0 10px 30px rgba(14, 4, 12, .35) !important;
     background-color: var(--gnl-bg) !important;
     background-image:
@@ -125,17 +142,28 @@ body.gnl-theme-active #sheld {
         url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgwLDEwMCkgc2NhbGUoMSwtMSkiPjxwYXRoIGQ9Ik0zIDQ4QzYgMTkgMTkgNiA0OCAzTTMgNjdDMTMgMzEgMzEgMTMgNjcgM003IDg3YzgtMzAgMjYtNDggNTYtNTZNMTYgMTZjMTcgMCAyNCA3IDI0IDI0QzIzIDQwIDE2IDMzIDE2IDE2Wm0yNyAyN2MxNy0yIDI3IDYgMjkgMjMtMTcgMi0yNy02LTI5LTIzWk05IDUyYzEyIDEgMTkgOCAyMCAyMC0xMi0xLTE5LTgtMjAtMjBaIiBmaWxsPSJub25lIiBzdHJva2U9IiNjNjliNWYiIHN0cm9rZS13aWR0aD0iMSIvPjxjaXJjbGUgY3g9IjE2IiBjeT0iMTYiIHI9IjMiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2M2OWI1ZiIvPjwvZz48L3N2Zz4="),
         url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxMDAsMTAwKSBzY2FsZSgtMSwtMSkiPjxwYXRoIGQ9Ik0zIDQ4QzYgMTkgMTkgNiA0OCAzTTMgNjdDMTMgMzEgMzEgMTMgNjcgM003IDg3YzgtMzAgMjYtNDggNTYtNTZNMTYgMTZjMTcgMCAyNCA3IDI0IDI0QzIzIDQwIDE2IDMzIDE2IDE2Wm0yNyAyN2MxNy0yIDI3IDYgMjkgMjMtMTcgMi0yNy02LTI5LTIzWk05IDUyYzEyIDEgMTkgOCAyMCAyMC0xMi0xLTE5LTgtMjAtMjBaIiBmaWxsPSJub25lIiBzdHJva2U9IiNjNjliNWYiIHN0cm9rZS13aWR0aD0iMSIvPjxjaXJjbGUgY3g9IjE2IiBjeT0iMTYiIHI9IjMiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2M2OWI1ZiIvPjwvZz48L3N2Zz4=") !important;
     background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, no-repeat !important;
-    background-position: 50% 0%, 6px 6px, calc(100% - 6px) 6px, 6px calc(100% - 6px), calc(100% - 6px) calc(100% - 6px) !important;
-    background-size: auto, 42px 42px, 42px 42px, 42px 42px, 42px 42px !important;
+    background-position:
+        50% 0%,
+        var(--gnl-frame-inset-1) var(--gnl-frame-inset-1),
+        calc(100% - var(--gnl-frame-inset-1)) var(--gnl-frame-inset-1),
+        var(--gnl-frame-inset-1) calc(100% - var(--gnl-frame-inset-1)),
+        calc(100% - var(--gnl-frame-inset-1)) calc(100% - var(--gnl-frame-inset-1)) !important;
+    background-size:
+        auto,
+        var(--gnl-frame-corner) var(--gnl-frame-corner),
+        var(--gnl-frame-corner) var(--gnl-frame-corner),
+        var(--gnl-frame-corner) var(--gnl-frame-corner),
+        var(--gnl-frame-corner) var(--gnl-frame-corner) !important;
 }
 /* the two inset rings from .rt-frame::before/::after, reproduced on #sheld
-   itself so the same "gold hairline + wine double-line" frame wraps the
-   whole chat, not just each message */
+   itself (at the same responsive insets as the corner ornaments above) so
+   the same "gold hairline + wine double-line" frame wraps the whole chat,
+   not just each message, and grows/shrinks with #sheld's own size. */
 body.gnl-theme-active #sheld::before,
 body.gnl-theme-active #sheld::after {
     content: '';
     position: absolute;
-    inset: 7px;
+    inset: var(--gnl-frame-inset-1);
     pointer-events: none;
     z-index: 1;
 }
@@ -143,11 +171,16 @@ body.gnl-theme-active #sheld::before {
     border: 1px solid rgba(202, 162, 100, .36);
 }
 body.gnl-theme-active #sheld::after {
-    inset: 10px;
-    border: 3px double rgba(106, 43, 61, .78);
+    inset: var(--gnl-frame-inset-2);
+    border: 4px double rgba(106, 43, 61, .78);
 }
+/* keep every message inside the frame's inner ring instead of touching or
+   sliding under it - the lace wraps *outside* the content, never overlaps
+   it. Padding tracks the same responsive scale as the frame itself. */
 body.gnl-theme-active #chat {
     background: transparent !important;
+    padding: clamp(16px, 2.6vw, 30px) !important;
+    box-sizing: border-box !important;
 }
 
 /* ---- strip SillyTavern's own per-message framing so only the card's own
