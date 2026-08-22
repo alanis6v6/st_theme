@@ -23,6 +23,17 @@ SillyTavern 擴充，搭配角色卡《性別不是限制，性吸引力才是�
 
 若之後角色卡自己的 `.rt-frame` 配色（`style` 那個 regex 腳本）改了，記得同步改這裡 `#sheld` 那段背景圖用的十六進位色（花紋 SVG 是 data URI，寫死在 `style.css` 裡，改色要重新產生 base64）。
 
+## 改了 `style.css` 卻完全沒變化？
+
+在酒館裡點「更新擴充」之後畫面還是舊的，最常見的原因不是 CSS 寫錯，而是瀏覽器把 `style.css` 快取住了：`index.js` 重新抓到了新版，但 `<link>` 的網址完全沒變，瀏覽器就不會重新下載那份 CSS——手機／PWA 安裝版尤其明顯。
+
+`index.js` 裡的 `bustStyleCache()` 會在載入時把這份主題自己的 `<link href="...style.css">` 加上 `?v=版本號`，強迫瀏覽器重新抓。**這代表以後只改 `style.css`、沒有同步把 `index.js` 最上面的 `VERSION` 常數也往上加一碼的話，快取還是不會被打破**——兩個檔案的版號要一起動，跟 `manifest.json` 的 `version` 保持一致。
+
+如果照這樣更新、版號也對了，畫面還是沒變，依序排查：
+1. 確認「性別不是限制主題」在 Extensions 清單裡是**啟用**狀態，且版本號真的變成新的了（不是卡在舊版）。
+2. 瀏覽器強制重新整理（電腦 Ctrl/Cmd+Shift+R；手機直接把分頁關掉重開，PWA 版可能要移除再重新加到主畫面）。
+3. 打開瀏覽器開發者工具的 Console，執行 `document.body.classList.contains('gnl-theme-active')`——回傳 `false` 代表 `index.js` 判斷目前不是在這張卡的聊天裡（多半是角色卡的 `name` 欄位跟 `index.js` 裡的 `TARGET_CHARACTER_NAME` 對不起來，或目前開著的是群組聊天），這種情況所有 CSS 都不會生效，跟 CSS 內容本身無關。
+
 ## v1.2：外框加大、跟裝置一起縮放
 
 參考 [st-brume](https://github.com/lubiyu0307-prog/st-brume)（`sillytavern` 那個擴充的原始 fork 來源）的做法確認過：它處理裝置縮放全部用 `dvh`/`dvw`／`clamp()`／`env(safe-area-inset-*)`，沒有寫死的 px。之前 `#sheld` 外框的四個角花紋是寫死 `42px`，在酒館把 `--sheldWidth` 撐到接近 900px 的桌機上顯得太小；改成 `clamp(34px, 5.2vw, 64px)`，內縮線也從 `6px`／`10px` 改成 `clamp(8px,1.4vw,16px)`／`clamp(13px,2.1vw,24px)`——手機上跟卡片本身的花紋比例一致，桌機上跟著 `#sheld` 一起變大，不會顯得比例失調。外框本身不改變 `#sheld` 的尺寸或位置（它已經跟著酒館自己的 `--sheldWidth` 縮放），只是疊加在上面，所以外緣永遠貼著酒館原本的聊天邊界，不會多出一圈留白。另外給 `#chat` 補上跟外框同步縮放的內距，訊息一律留在雙圈內側，不會被花紋壓到或蓋住。
