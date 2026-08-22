@@ -32,7 +32,18 @@ SillyTavern 擴充，搭配角色卡《性別不是限制，性吸引力才是�
 如果照這樣更新、版號也對了，畫面還是沒變，依序排查：
 1. 確認「性別不是限制主題」在 Extensions 清單裡是**啟用**狀態，且版本號真的變成新的了（不是卡在舊版）。
 2. 瀏覽器強制重新整理（電腦 Ctrl/Cmd+Shift+R；手機直接把分頁關掉重開，PWA 版可能要移除再重新加到主畫面）。
-3. 打開瀏覽器開發者工具的 Console，執行 `document.body.classList.contains('gnl-theme-active')`——回傳 `false` 代表 `index.js` 判斷目前不是在這張卡的聊天裡（多半是角色卡的 `name` 欄位跟 `index.js` 裡的 `TARGET_CHARACTER_NAME` 對不起來，或目前開著的是群組聊天），這種情況所有 CSS 都不會生效，跟 CSS 內容本身無關。
+3. 打開瀏覽器開發者工具的 Console，執行 `document.body.classList.contains('gnl-theme-active')`——回傳 `false` 代表 `index.js` 判斷目前不是在這張卡的聊天裡，這種情況所有 CSS 都不會生效，跟 CSS 內容本身無關。
+
+## v1.3：改用跟 st-brume 一樣的掛載方式
+
+v1.2 以前 `index.js` 是用 `import { eventSource, event_types, getContext } from '../../../../script.js'` 直接匯入酒館核心模組，只靠 `CHAT_CHANGED`／`APP_READY` 兩個事件觸發 `body.gnl-theme-active`。實測發現：即使在 Console 直接呼叫 `SillyTavern.getContext()` 能正確讀到目前角色（`characterId`、`name` 都對得上 `TARGET_CHARACTER_NAME`），`document.body.classList.contains('gnl-theme-active')` 卻是 `false`——代表這兩個事件在該次操作流程裡沒有確實觸發到 `applyThemeState()`，跟角色名稱比對邏輯本身無關。
+
+比對 [st-brume](https://github.com/lubiyu0307-prog/st-brume)（`sillytavern` 那個擴充的原始 fork 來源）的寫法後，改成同一套更耐用的掛法：
+- 不再從 `script.js` 匯入，一律透過全域 `SillyTavern.getContext()` 取得（`st-brume` 的 `getContext()` 就是這樣寫的，不吃相對路徑）。
+- 訂閱事件前先用 `.filter(Boolean)` 濾掉不存在的事件名稱，並多訂閱 `CHARACTER_EDITED`／`GROUP_UPDATED`，不是只有 `CHAT_CHANGED`／`APP_READY` 兩個。
+- 加上 `setInterval(applyThemeState, 1000)` 當保底——不管哪個事件在特定情境下沒有確實觸發，最慢一秒內狀態就會自己校正回來，這也是 `st-brume` 自己用來維持即時狀態的做法。
+
+`index.js` 的 `VERSION` 常數與 `manifest.json` 的 `version` 都同步升到 1.3.0，觸發前面提到的快取清除機制。
 
 ## v1.2：外框加大、跟裝置一起縮放
 
