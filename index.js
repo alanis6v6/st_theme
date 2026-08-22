@@ -11,6 +11,35 @@ import { eventSource, event_types, getContext } from '../../../../script.js';
 
 const TARGET_CHARACTER_NAME = '性別不是限制，性吸引力才是';
 const THEME_CLASS = 'gnl-theme-active';
+// Bump this alongside manifest.json's version whenever style.css changes.
+// Browsers (and mobile/PWA installs especially) can keep serving a cached
+// copy of this extension's style.css even after ST re-fetches index.js on
+// "update extension" - the <link> href never changed, so nothing tells the
+// browser the file is stale. Appending ?v=VERSION to that <link> forces a
+// real re-fetch. Same technique as the sibling st-brume/foret-noire theme's
+// bustStyleCache(); this extension never had it, which is the likely reason
+// CSS-only edits kept appearing to do nothing after a push + extension update.
+const VERSION = '1.2.0';
+
+function bustStyleCache() {
+    try {
+        // This module's own directory - resolving relative to import.meta.url
+        // (rather than matching on a hardcoded repo-folder name) means this
+        // still works whichever folder name ST clones this extension into.
+        const selfDir = new URL('.', import.meta.url).href;
+        document.querySelectorAll('link[rel="stylesheet"][href*="style.css"]').forEach((link) => {
+            const raw = link.getAttribute('href') || '';
+            const abs = new URL(raw, document.baseURI).href;
+            if (!abs.startsWith(selfDir)) return;
+            if (abs.includes('v=' + VERSION)) return;
+            link.setAttribute('href', raw.split('?')[0] + '?v=' + VERSION);
+        });
+    } catch (err) {
+        console.error('[gnl-theme] failed to bust style cache', err);
+    }
+}
+
+bustStyleCache();
 
 function applyThemeState() {
     try {
