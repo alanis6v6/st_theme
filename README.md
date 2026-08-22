@@ -49,6 +49,18 @@ v1.2 以前 `index.js` 是用 `import { eventSource, event_types, getContext } f
 
 參考 [st-brume](https://github.com/lubiyu0307-prog/st-brume)（`sillytavern` 那個擴充的原始 fork 來源）的做法確認過：它處理裝置縮放全部用 `dvh`/`dvw`／`clamp()`／`env(safe-area-inset-*)`，沒有寫死的 px。之前 `#sheld` 外框的四個角花紋是寫死 `42px`，在酒館把 `--sheldWidth` 撐到接近 900px 的桌機上顯得太小；改成 `clamp(34px, 5.2vw, 64px)`，內縮線也從 `6px`／`10px` 改成 `clamp(8px,1.4vw,16px)`／`clamp(13px,2.1vw,24px)`——手機上跟卡片本身的花紋比例一致，桌機上跟著 `#sheld` 一起變大，不會顯得比例失調。外框本身不改變 `#sheld` 的尺寸或位置（它已經跟著酒館自己的 `--sheldWidth` 縮放），只是疊加在上面，所以外緣永遠貼著酒館原本的聊天邊界，不會多出一圈留白。另外給 `#chat` 補上跟外框同步縮放的內距，訊息一律留在雙圈內側，不會被花紋壓到或蓋住。
 
+## v1.4：Chat Top Bar 那排、輸入框簡化、金屬花邊、斜體／花體字、全域開關
+
+- 找到那排一直沒套上主題的列了：它其實不是這個擴充、也不是 `sillytavern`（黑森林）擴充畫的，而是官方擴充 [Chat Top Bar](https://github.com/SillyTavern/Extension-TopInfoBar)（`#extensionTopBar`）；[Memory Books](https://github.com/aikohanasaki/SillyTavern-MemoryBooks) 只是偵測到它存在時，把自己的「記憶書任務」按鈕（`#stmb-jobs-topbar`）插進去而已。因為 CSS 是照 ID 寫的，Chat Top Bar 沒裝的話這整段規則自然就是無作用，不需要額外判斷「有沒有裝」。
+  - 隱藏原本的「Toggle sidebar」（`#extensionTopBarToggleSidebar`）與「Show connection profiles」（`#extensionTopBarToggleConnectionProfiles`）。
+  - 用 CSS `order`（純排版，沒有搬動 DOM）把「記憶書任務」與「View chat files／檢視聊天檔案」（`#extensionTopBarChatManager`）拉到最左邊，接手原本兩顆按鈕的位置——就算沒裝 Memory Books，「檢視聊天檔案」自己也會補到最前面。
+  - 整排套上跟頂部工具列一致的金色漸層底、金色線條圖示、hover 發光。
+  - 點開「記憶書任務」抽屜（`#top_chat_stmb_jobs`）會看到另一組「金屬」配色（銀灰＋鉻白，`--gnl-metal-*` 變數），同一套四角花紋但換成冷色調——刻意跟底下的金＋酒紅主題分開，一眼就知道這是暫時跳出來的工作面板，不是聊天本身的一部分。
+- 輸入框重新設計：`#send_form` 不再是一整個大方框，改成「有邊框的輸入框＋周圍是純圖示、沒有外框的按鈕」，訊息輸入框跟旁邊的圖示視覺上明確分開。
+- 全站字體加了 `font-style: italic` 搭配 `font-synthesis: none`：英文字母／數字會自動套用 Cormorant Garamond 真正的斜體字（Google Fonts 有這個字重），中文因為那個字型沒有對應字符，會照原樣落到 Noto Serif TC 且**不會**被瀏覽器硬拉斜——不用另外判斷一段文字是不是英文，纯粹靠 Unicode 範圍自然分流。標題（`.popup h3/h4`、抽屜標題、記憶書任務標題）再疊一層 Tangerine 手寫花體字，同樣原理：標題裡的英文字會變成花體，中文字不受影響。
+- 順手把常見的酒館通用元件也套進主題：`.popup`／`.menu_button`／`.text_pole`／`.drawer-content`。這是**廣泛但非全面**的第一輪——涵蓋最常見的共用元件，不是每個擴充各自的畫面；還有哪個角落沒套到，直接說是哪個面板，比照 `#extensionTopBar` 這樣個別點名處理。
+- Extensions 設定頁新增「性別不是限制主題」收合區塊，裡面一個「套用到全域」開關——打開後不管目前是哪張角色卡的聊天都會套用主題，關掉則變回只認《性別不是限制，性吸引力才是》這張卡。設定存在 `extensionSettings.gnl_theme.applyGlobally`，跟酒館其他擴充設定一樣會存檔。
+
 ## 更新配色 / 卡片寬度
 
 顏色變數集中在 `style.css` 最上面的 `body.gnl-theme-active { --gnl-*: ...; }` 區塊；卡片寬度覆寫在同一個檔案裡搜尋 `.rt-shell` 那一段。改完直接 commit push，酒館下次啟用擴充時會用新版本（`manifest.json` 有開 `auto_update`）。

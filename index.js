@@ -28,13 +28,14 @@
 
     const TARGET_CHARACTER_NAME = '性別不是限制，性吸引力才是';
     const THEME_CLASS = 'gnl-theme-active';
+    const SETTINGS_KEY = 'gnl_theme';
     // Bump this alongside manifest.json's version whenever style.css
     // changes. Browsers (and mobile/PWA installs especially) can keep
     // serving a cached copy of this extension's style.css even after ST
     // re-fetches index.js on "update extension" - the <link> href never
     // changed, so nothing tells the browser the file is stale. Appending
     // ?v=VERSION to that <link> forces a real re-fetch.
-    const VERSION = '1.3.0';
+    const VERSION = '1.4.0';
 
     function getContext() {
         try {
@@ -64,10 +65,19 @@
         }
     }
 
+    function getSettings(context) {
+        if (!context.extensionSettings) return { applyGlobally: false };
+        if (!context.extensionSettings[SETTINGS_KEY]) {
+            context.extensionSettings[SETTINGS_KEY] = { applyGlobally: false };
+        }
+        return context.extensionSettings[SETTINGS_KEY];
+    }
+
     function applyThemeState() {
         try {
             const context = getContext();
             if (!context) return;
+            const settings = getSettings(context);
             // group chats are never this card (it's a single-character
             // import), so bail out to "not active" rather than reading
             // characterId, which is stale/meaningless while a group chat
@@ -75,11 +85,52 @@
             const activeName = context.groupId
                 ? null
                 : context.characters?.[context.characterId]?.name;
-            const isActive = activeName === TARGET_CHARACTER_NAME;
+            const isActive = !!settings.applyGlobally || activeName === TARGET_CHARACTER_NAME;
             document.body.classList.toggle(THEME_CLASS, isActive);
         } catch (err) {
             console.error('[gnl-theme] failed to evaluate the active character', err);
         }
+    }
+
+    // Settings panel: a single "apply globally" checkbox under Extensions,
+    // letting the theme run in every chat instead of only this card's.
+    // Injected into #extensions_settings2 the same way most ST extensions
+    // add their settings block; the container may not exist yet on the
+    // very first tick of a fresh page load, so this is retried a few times
+    // from init() rather than assumed to succeed immediately.
+    function buildSettingsPanel() {
+        if (document.getElementById('gnl_theme_settings')) return true;
+        const container = document.getElementById('extensions_settings2')
+            || document.getElementById('extensions_settings');
+        const context = getContext();
+        if (!container || !context) return false;
+
+        const settings = getSettings(context);
+        const wrapper = document.createElement('div');
+        wrapper.id = 'gnl_theme_settings';
+        wrapper.innerHTML =
+            '<div class="inline-drawer">' +
+            '  <div class="inline-drawer-toggle inline-drawer-header">' +
+            '    <b>性別不是限制主題</b>' +
+            '    <div class="inline-drawer-icon fa-solid fa-circle-chevron-down down"></div>' +
+            '  </div>' +
+            '  <div class="inline-drawer-content">' +
+            '    <label class="checkbox_label" for="gnl_theme_apply_globally">' +
+            '      <input id="gnl_theme_apply_globally" type="checkbox" />' +
+            '      <span>套用到全域（不限這張卡，所有聊天都套用這個主題）</span>' +
+            '    </label>' +
+            '  </div>' +
+            '</div>';
+        container.appendChild(wrapper);
+
+        const checkbox = wrapper.querySelector('#gnl_theme_apply_globally');
+        checkbox.checked = !!settings.applyGlobally;
+        checkbox.addEventListener('change', () => {
+            settings.applyGlobally = checkbox.checked;
+            if (typeof context.saveSettingsDebounced === 'function') context.saveSettingsDebounced();
+            applyThemeState();
+        });
+        return true;
     }
 
     function hookEvents() {
@@ -105,6 +156,15 @@
         bustStyleCache();
         hookEvents();
         applyThemeState();
+        // The extensions settings container isn't always mounted yet the
+        // moment this script first runs - retry briefly rather than
+        // silently giving up on ever showing the "apply globally" toggle.
+        if (!buildSettingsPanel()) {
+            let tries = 0;
+            const retry = setInterval(() => {
+                if (buildSettingsPanel() || ++tries > 20) clearInterval(retry);
+            }, 500);
+        }
     }
 
     if (document.readyState === 'loading') {

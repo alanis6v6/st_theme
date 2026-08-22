@@ -4,7 +4,7 @@
    globally the instant the extension is enabled, per SillyTavern's own
    manifest.css loading - is a visual no-op in every other chat. */
 
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Noto+Serif+TC:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=Tangerine:wght@700&family=Noto+Serif+TC:wght@400;500;600;700&display=swap');
 
 /* ---- palette (mirrors the card's own regex-rendered <style> block) ---- */
 body.gnl-theme-active {
@@ -36,6 +36,45 @@ body.gnl-theme-active {
     --gnl-frame-inset-1: clamp(8px, 1.4vw, 16px);
     --gnl-frame-inset-2: clamp(13px, 2.1vw, 24px);
     --gnl-frame-corner: clamp(34px, 5.2vw, 64px);
+
+    /* A second, cooler "metal" palette (chrome/steel rather than gold-on-
+       wine) reserved for transient utility panels that need to read as
+       clearly separate from the persistent base chrome - see the
+       #top_chat_stmb_jobs section below. */
+    --gnl-metal-bg: #14171a;
+    --gnl-metal-panel: #1c2024;
+    --gnl-metal-line: #9aa3ab;
+    --gnl-metal-bright: #d8dee3;
+}
+
+/* ---- typography: English/Latin text renders in Cormorant Garamond's own
+   real italic face wherever font-style:italic is set (its Google Fonts
+   request above includes the ital=1 axis), while font-synthesis:none stops
+   the browser from faking a slant on Noto Serif TC for the Chinese
+   characters that font doesn't cover - so italic can be set broadly below
+   without ever tilting CJK text, with no per-run language detection
+   needed. ---- */
+body.gnl-theme-active {
+    font-synthesis: none;
+    font-style: italic;
+    font-family: 'Cormorant Garamond', 'Noto Serif TC', 'Songti TC', serif;
+}
+/* Titles get the same treatment one step further: Tangerine (a script
+   face, Latin-only) leads the stack, so any English word inside a title
+   renders as flowing script while the Chinese portion of the same title
+   falls through to Noto Serif TC bold - again with no detection logic,
+   purely from each character's own Unicode range. Normal (not italic)
+   here since Tangerine's own slant already reads as handwritten; stacking
+   CSS italic on top of it would over-tilt it. */
+body.gnl-theme-active .popup h3,
+body.gnl-theme-active .popup h4,
+body.gnl-theme-active .drawer-content .inline-drawer-header,
+body.gnl-theme-active .stmb-jobs-drawer-title,
+body.gnl-theme-active .stmb-jobs-panel-header strong {
+    font-family: 'Tangerine', 'Cormorant Garamond', 'Noto Serif TC', 'Songti TC', serif;
+    font-style: normal;
+    font-weight: 700;
+    letter-spacing: .02em;
 }
 
 /* ---- fallback canvas: whatever ST paints behind everything else (the
@@ -109,6 +148,115 @@ body.gnl-theme-active #top-settings-holder .drawer-icon.openIcon {
     body.gnl-theme-active #top-settings-holder .drawer-icon {
         animation: none;
     }
+}
+
+/* ---- Chat Top Bar (#extensionTopBar, from the official SillyTavern
+   extension "Chat Top Bar" by Cohee1207 - github.com/SillyTavern/
+   Extension-TopInfoBar) - the row showing the current chat name, search,
+   and file-management icons. It only exists in the DOM at all when that
+   extension is installed and enabled, so every rule here is naturally a
+   no-op otherwise; nothing needs to check for its presence.
+   "Toggle sidebar" and "Show connection profiles" are hidden outright (not
+   used in this theme); "View chat files" and the Memory Books job button
+   (if that extension is also installed) are pulled to the front via flex
+   `order` - pure CSS repositioning, no DOM changes, so this still works
+   correctly even without Memory Books installed. ---- */
+body.gnl-theme-active #extensionTopBar {
+    background: linear-gradient(180deg, var(--gnl-panel-2), var(--gnl-panel)) !important;
+    border: 1px solid rgba(169, 121, 69, .45) !important;
+    border-radius: 8px 8px 0 0 !important;
+    height: auto !important;
+    min-height: calc(var(--bottomFormBlockSize, 40px) * 1.2);
+    padding: 6px 12px !important;
+    gap: 12px !important;
+    box-shadow: 0 2px 14px rgba(0, 0, 0, .4) !important;
+}
+body.gnl-theme-active #extensionTopBarToggleSidebar,
+body.gnl-theme-active #extensionTopBarToggleConnectionProfiles {
+    display: none !important;
+}
+/* left-to-right visual order: Memory Books job button, then View chat
+   files, then the chat-name dropdown and search take up the rest. */
+body.gnl-theme-active #stmb-jobs-topbar {
+    order: -2;
+}
+body.gnl-theme-active #extensionTopBarChatManager {
+    order: -1;
+}
+body.gnl-theme-active #extensionTopBar i,
+body.gnl-theme-active #extensionTopBar .right_menu_button {
+    color: var(--gnl-gold) !important;
+    font-size: 1.15em !important;
+    transition: color .2s ease, filter .2s ease, transform .2s ease;
+}
+body.gnl-theme-active #extensionTopBar i:hover,
+body.gnl-theme-active #extensionTopBar .right_menu_button:hover {
+    color: var(--gnl-gold-bright) !important;
+    filter: drop-shadow(0 0 6px rgba(201, 156, 95, .6));
+    transform: translateY(-1px) scale(1.15);
+}
+body.gnl-theme-active #extensionTopBarChatName,
+body.gnl-theme-active #extensionTopBarSearchInput {
+    color: var(--gnl-text-dim) !important;
+    font-style: italic;
+}
+body.gnl-theme-active #extensionTopBarChatName option {
+    background: var(--gnl-panel);
+    color: var(--gnl-text);
+}
+body.gnl-theme-active #extensionTopBarSearchInput::placeholder {
+    color: #8a7468 !important;
+}
+body.gnl-theme-active .stmb-jobs-badge {
+    background: var(--gnl-wine) !important;
+    color: var(--gnl-text) !important;
+    border: 1px solid var(--gnl-gold) !important;
+}
+
+/* ---- Memory Books job panel (#top_chat_stmb_jobs): the one panel this
+   row actually opens now that the sidebar/connection-profile toggles are
+   gone. It gets the *metal* palette instead of the base gold-on-wine one -
+   same corner-flourish technique as the chat frame above, recolored to
+   chrome/steel - so an opened utility panel always reads as clearly
+   distinct from the persistent narrative chrome underneath it, per the
+   request that it needs its own visual identity rather than just
+   inheriting the base theme. ---- */
+body.gnl-theme-active #top_chat_stmb_jobs {
+    position: relative;
+    background-color: var(--gnl-metal-bg) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border: 2px solid var(--gnl-metal-line) !important;
+    border-radius: 0 0 8px 8px;
+    box-shadow:
+        inset 0 0 0 3px var(--gnl-metal-panel),
+        inset 0 0 0 4px rgba(154, 163, 171, .35),
+        0 10px 26px rgba(0, 0, 0, .45) !important;
+    color: var(--gnl-text) !important;
+    background-image:
+        url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cGF0aCBkPSJNMyA0OEM2IDE5IDE5IDYgNDggM00zIDY3QzEzIDMxIDMxIDEzIDY3IDNNNyA4N2M4LTMwIDI2LTQ4IDU2LTU2TTE2IDE2YzE3IDAgMjQgNyAyNCAyNEMyMyA0MCAxNiAzMyAxNiAxNlptMjcgMjdjMTctMiAyNyA2IDI5IDIzLTE3IDItMjctNi0yOS0yM1pNOSA1MmMxMiAxIDE5IDggMjAgMjAtMTItMS0xOS04LTIwLTIwWiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjYzlkM2RhIiBzdHJva2Utd2lkdGg9IjEiLz48Y2lyY2xlIGN4PSIxNiIgY3k9IjE2IiByPSIzIiBmaWxsPSJub25lIiBzdHJva2U9IiNjOWQzZGEiLz48L3N2Zz4="),
+        url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxMDAsMCkgc2NhbGUoLTEsMSkiPjxwYXRoIGQ9Ik0zIDQ4QzYgMTkgMTkgNiA0OCAzTTMgNjdDMTMgMzEgMzEgMTMgNjcgM003IDg3YzgtMzAgMjYtNDggNTYtNTZNMTYgMTZjMTcgMCAyNCA3IDI0IDI0QzIzIDQwIDE2IDMzIDE2IDE2Wm0yNyAyN2MxNy0yIDI3IDYgMjkgMjMtMTcgMi0yNy02LTI5LTIzWk05IDUyYzEyIDEgMTkgOCAyMCAyMC0xMi0xLTE5LTgtMjAtMjBaIiBmaWxsPSJub25lIiBzdHJva2U9IiNjOWQzZGEiIHN0cm9rZS13aWR0aD0iMSIvPjxjaXJjbGUgY3g9IjE2IiBjeT0iMTYiIHI9IjMiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2M5ZDNkYSIvPjwvZz48L3N2Zz4="),
+        url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgwLDEwMCkgc2NhbGUoMSwtMSkiPjxwYXRoIGQ9Ik0zIDQ4QzYgMTkgMTkgNiA0OCAzTTMgNjdDMTMgMzEgMzEgMTMgNjcgM003IDg3YzgtMzAgMjYtNDggNTYtNTZNMTYgMTZjMTcgMCAyNCA3IDI0IDI0QzIzIDQwIDE2IDMzIDE2IDE2Wm0yNyAyN2MxNy0yIDI3IDYgMjkgMjMtMTcgMi0yNy02LTI5LTIzWk05IDUyYzEyIDEgMTkgOCAyMCAyMC0xMi0xLTE5LTgtMjAtMjBaIiBmaWxsPSJub25lIiBzdHJva2U9IiNjOWQzZGEiIHN0cm9rZS13aWR0aD0iMSIvPjxjaXJjbGUgY3g9IjE2IiBjeT0iMTYiIHI9IjMiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2M5ZDNkYSIvPjwvZz48L3N2Zz4="),
+        url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxMDAsMTAwKSBzY2FsZSgtMSwtMSkiPjxwYXRoIGQ9Ik0zIDQ4QzYgMTkgMTkgNiA0OCAzTTMgNjdDMTMgMzEgMzEgMTMgNjcgM003IDg3YzgtMzAgMjYtNDggNTYtNTZNMTYgMTZjMTcgMCAyNCA3IDI0IDI0QzIzIDQwIDE2IDMzIDE2IDE2Wm0yNyAyN2MxNy0yIDI3IDYgMjkgMjMtMTcgMi0yNy02LTI5LTIzWk05IDUyYzEyIDEgMTkgOCAyMCAyMC0xMi0xLTE5LTgtMjAtMjBaIiBmaWxsPSJub25lIiBzdHJva2U9IiNjOWQzZGEiIHN0cm9rZS13aWR0aD0iMSIvPjxjaXJjbGUgY3g9IjE2IiBjeT0iMTYiIHI9IjMiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2M5ZDNkYSIvPjwvZz48L3N2Zz4=") !important;
+    background-repeat: no-repeat, no-repeat, no-repeat, no-repeat !important;
+    background-position: 6px 6px, calc(100% - 6px) 6px, 6px calc(100% - 6px), calc(100% - 6px) calc(100% - 6px) !important;
+    background-size: 30px 30px, 30px 30px, 30px 30px, 30px 30px !important;
+}
+body.gnl-theme-active #top_chat_stmb_jobs .stmb-jobs-drawer-title {
+    color: var(--gnl-metal-bright) !important;
+}
+body.gnl-theme-active #top_chat_stmb_jobs .menu_button {
+    background: var(--gnl-metal-panel) !important;
+    border: 1px solid var(--gnl-metal-line) !important;
+    color: var(--gnl-text-dim) !important;
+}
+body.gnl-theme-active #top_chat_stmb_jobs .menu_button:hover {
+    border-color: var(--gnl-metal-bright) !important;
+    color: var(--gnl-metal-bright) !important;
+}
+body.gnl-theme-active .stmb-jobs-row {
+    background: var(--gnl-metal-panel) !important;
+    border: 1px solid rgba(154, 163, 171, .3) !important;
 }
 
 /* ---- chat backdrop: the whole chat room, not just each message, wears
@@ -217,28 +365,96 @@ body.gnl-theme-active .rt-wheel-section {
     width: min(94%, 460px) !important;
 }
 
-/* ---- chat input ---- */
+/* ---- chat input: simplified from "one bordered box holding everything"
+   to "a clearly-boxed message field, with plain unboxed icon buttons
+   floating around it" - closer to the card's own restrained, uncluttered
+   look, and it makes the text field itself the one obvious thing to click
+   into instead of it blending into a bigger panel. ---- */
 body.gnl-theme-active #send_form {
-    background: var(--gnl-panel) !important;
-    border: 1px solid var(--gnl-gold) !important;
-    box-shadow: inset 0 0 0 1px rgba(184, 137, 78, .25) !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    gap: 8px;
 }
 body.gnl-theme-active #send_textarea {
-    background: transparent !important;
+    background: var(--gnl-panel) !important;
+    border: 1px solid var(--gnl-gold) !important;
+    border-radius: 10px;
+    box-shadow: inset 0 0 0 1px rgba(184, 137, 78, .2) !important;
+    padding: 10px 14px !important;
     color: var(--gnl-text) !important;
-    font-family: 'Noto Serif TC', 'Songti TC', serif;
     caret-color: var(--gnl-gold-bright);
 }
 body.gnl-theme-active #send_textarea::placeholder {
     color: #8a7468 !important;
 }
+body.gnl-theme-active #leftSendForm,
+body.gnl-theme-active #rightSendForm {
+    background: transparent !important;
+}
 body.gnl-theme-active #leftSendForm > div,
 body.gnl-theme-active #rightSendForm > div {
+    background: transparent !important;
+    border: none !important;
     color: var(--gnl-text-dim) !important;
+    transition: color .2s ease, transform .2s ease;
 }
 body.gnl-theme-active #leftSendForm > div:hover,
 body.gnl-theme-active #rightSendForm > div:hover {
     color: var(--gnl-gold-bright) !important;
+    transform: translateY(-1px) scale(1.1);
+}
+body.gnl-theme-active #send_but {
+    color: var(--gnl-gold-bright) !important;
+}
+
+/* ---- broader chrome: popups, generic buttons, and generic text inputs
+   pick up the same gold-line-on-wine palette so opening any panel while
+   this theme is active still reads as the same object, not a sudden drop
+   back to ST's default grey. This is a first, broad pass over the most
+   common shared ST chrome (not every extension's bespoke UI) - anything
+   still grey after this is a specific element worth naming individually,
+   the same way #extensionTopBar and #top_chat_stmb_jobs were above. ---- */
+body.gnl-theme-active .popup,
+body.gnl-theme-active dialog.popup {
+    background: linear-gradient(160deg, var(--gnl-panel-2), var(--gnl-bg)) !important;
+    border: 1px solid var(--gnl-gold) !important;
+    box-shadow:
+        inset 0 0 0 1px rgba(184, 137, 78, .18),
+        0 12px 40px rgba(0, 0, 0, .5) !important;
+    color: var(--gnl-text) !important;
+}
+body.gnl-theme-active .popup-content,
+body.gnl-theme-active .popup-body {
+    color: var(--gnl-text) !important;
+}
+body.gnl-theme-active .popup .menu_button,
+body.gnl-theme-active .menu_button {
+    background: var(--gnl-panel) !important;
+    border: 1px solid rgba(169, 121, 69, .5) !important;
+    color: var(--gnl-text-dim) !important;
+    transition: border-color .2s ease, color .2s ease, box-shadow .2s ease;
+}
+body.gnl-theme-active .popup .menu_button:hover,
+body.gnl-theme-active .menu_button:hover {
+    border-color: var(--gnl-gold-bright) !important;
+    color: #f0d6ad !important;
+    box-shadow: 0 0 10px rgba(201, 156, 95, .25) !important;
+}
+body.gnl-theme-active .text_pole,
+body.gnl-theme-active textarea.text_pole {
+    background: var(--gnl-panel) !important;
+    border: 1px solid rgba(169, 121, 69, .5) !important;
+    color: var(--gnl-text) !important;
+}
+body.gnl-theme-active .text_pole:focus {
+    border-color: var(--gnl-gold-bright) !important;
+    box-shadow: 0 0 0 1px rgba(201, 156, 95, .35) !important;
+}
+body.gnl-theme-active .drawer-content {
+    background: var(--gnl-panel) !important;
+    border-top: 1px solid rgba(169, 121, 69, .35) !important;
+    color: var(--gnl-text) !important;
 }
 
 /* ---- quick reply bar ---- */
@@ -249,7 +465,7 @@ body.gnl-theme-active .qr--button {
     background: linear-gradient(180deg, var(--gnl-panel-2), var(--gnl-panel)) !important;
     border: 1px solid rgba(169, 121, 69, .5) !important;
     color: var(--gnl-text-dim) !important;
-    font-family: 'Noto Serif TC', 'Songti TC', serif;
+    font-family: 'Cormorant Garamond', 'Noto Serif TC', 'Songti TC', serif;
 }
 body.gnl-theme-active .qr--button:hover {
     border-color: var(--gnl-gold-bright) !important;
