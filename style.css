@@ -259,30 +259,45 @@ body.gnl-theme-active .stmb-jobs-row {
     border: 1px solid rgba(154, 163, 171, .3) !important;
 }
 
-/* ---- chat backdrop: the whole chat room, not just each message, wears
-   the card's own gold double-ring frame (border + inset single line +
-   inset double line, per the .rt-frame rules baked into the card's regex
-   output) plus the same hand-drawn corner flourish baked into that frame,
-   reproduced here as 4 mirrored SVG corner ornaments so the entire chat
-   window reads as one continuation of the card, not a plain box around it. ---- */
+/* ---- outer shell (#sheld): a plain gold border only. The earlier version
+   put the full ornate corner-flourish frame here, but #sheld also contains
+   the Chat Top Bar row and the input row flush against its top/bottom
+   edges - the corner ornaments sat right on top of them. Keeping this
+   outer edge plain avoids that collision entirely; the ornate "lace" frame
+   below is scoped to #chat instead, where it can't collide with anything
+   since #chat only holds the scrolling message list. ---- */
 body.gnl-theme-active #sheld {
-    /* #sheld is already positioned (ST docks it with position:fixed) and its
-       width already tracks --sheldWidth (ST's own var, min(96vw,900px) per
-       the note above) - this rule only adds the frame *on top of* that
-       existing, already-responsive box. It never resizes or repositions
-       #sheld itself, so the frame's outer edge stays exactly at ST's own
-       chat boundary (no extra margin added around it) at every viewport
-       size, and the corner ornaments below anchor to it via
-       position:absolute without this rule touching `position` itself -
-       overriding it to `relative` would break ST's own fixed docking of
-       the chat panel. */
     border: 2px solid var(--gnl-gold) !important;
     border-radius: 6px;
-    box-shadow:
-        inset 0 0 0 4px var(--gnl-panel-2),
-        inset 0 0 0 6px rgba(184, 137, 78, .42),
-        0 10px 30px rgba(14, 4, 12, .35) !important;
+    box-shadow: 0 10px 30px rgba(14, 4, 12, .35) !important;
     background-color: var(--gnl-bg) !important;
+}
+
+/* ---- #chat: the card's gold double-ring frame (per the .rt-frame rules
+   baked into the card's regex output) plus its hand-drawn corner flourish,
+   reproduced as 4 mirrored SVG corner ornaments, scoped to just the
+   message-scrolling area rather than the whole shell.
+   Everything here is deliberately implemented as background-image/
+   box-shadow rather than ::before/::after pseudo-elements: #chat scrolls
+   its own content, and absolutely-positioned pseudo-elements would scroll
+   away with it. background-image and box-shadow are painted on the
+   element's own box (background-attachment defaults to `scroll`, which -
+   confusingly - means "fixed to the element, not the page", i.e. exactly
+   what's wanted here), so the frame stays anchored to #chat's corners
+   regardless of scroll position. ---- */
+body.gnl-theme-active #chat {
+    padding: clamp(16px, 2.6vw, 30px) !important;
+    box-sizing: border-box !important;
+    background-color: var(--gnl-bg) !important;
+    /* two-tone inset ring standing in for the card's separate hairline +
+       double-line: box-shadow can't leave a gap between rings the way two
+       separate ::before/::after borders could, so instead each shadow
+       simply covers the ring "outside" the next one - gold hairline right
+       at the edge, then a band of dark wine-tinted wash further in. */
+    box-shadow:
+        inset 0 0 0 1px rgba(202, 162, 100, .5),
+        inset 0 0 0 4px rgba(106, 43, 61, .55),
+        inset 0 0 0 5px rgba(202, 162, 100, .25) !important;
     background-image:
         radial-gradient(circle at 50% 0%, rgba(111, 41, 63, .16), transparent 55%),
         url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cGF0aCBkPSJNMyA0OEM2IDE5IDE5IDYgNDggM00zIDY3QzEzIDMxIDMxIDEzIDY3IDNNNyA4N2M4LTMwIDI2LTQ4IDU2LTU2TTE2IDE2YzE3IDAgMjQgNyAyNCAyNEMyMyA0MCAxNiAzMyAxNiAxNlptMjcgMjdjMTctMiAyNyA2IDI5IDIzLTE3IDItMjctNi0yOS0yM1pNOSA1MmMxMiAxIDE5IDggMjAgMjAtMTItMS0xOS04LTIwLTIwWiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjYzY5YjVmIiBzdHJva2Utd2lkdGg9IjEiLz48Y2lyY2xlIGN4PSIxNiIgY3k9IjE2IiByPSIzIiBmaWxsPSJub25lIiBzdHJva2U9IiNjNjliNWYiLz48L3N2Zz4="),
@@ -302,33 +317,6 @@ body.gnl-theme-active #sheld {
         var(--gnl-frame-corner) var(--gnl-frame-corner),
         var(--gnl-frame-corner) var(--gnl-frame-corner),
         var(--gnl-frame-corner) var(--gnl-frame-corner) !important;
-}
-/* the two inset rings from .rt-frame::before/::after, reproduced on #sheld
-   itself (at the same responsive insets as the corner ornaments above) so
-   the same "gold hairline + wine double-line" frame wraps the whole chat,
-   not just each message, and grows/shrinks with #sheld's own size. */
-body.gnl-theme-active #sheld::before,
-body.gnl-theme-active #sheld::after {
-    content: '';
-    position: absolute;
-    inset: var(--gnl-frame-inset-1);
-    pointer-events: none;
-    z-index: 1;
-}
-body.gnl-theme-active #sheld::before {
-    border: 1px solid rgba(202, 162, 100, .36);
-}
-body.gnl-theme-active #sheld::after {
-    inset: var(--gnl-frame-inset-2);
-    border: 4px double rgba(106, 43, 61, .78);
-}
-/* keep every message inside the frame's inner ring instead of touching or
-   sliding under it - the lace wraps *outside* the content, never overlaps
-   it. Padding tracks the same responsive scale as the frame itself. */
-body.gnl-theme-active #chat {
-    background: transparent !important;
-    padding: clamp(16px, 2.6vw, 30px) !important;
-    box-sizing: border-box !important;
 }
 
 /* ---- strip SillyTavern's own per-message framing so only the card's own
@@ -397,6 +385,7 @@ body.gnl-theme-active #rightSendForm > div {
     background: transparent !important;
     border: none !important;
     color: var(--gnl-text-dim) !important;
+    font-size: .85em !important;
     transition: color .2s ease, transform .2s ease;
 }
 body.gnl-theme-active #leftSendForm > div:hover,
@@ -471,4 +460,26 @@ body.gnl-theme-active .qr--button:hover {
     border-color: var(--gnl-gold-bright) !important;
     color: #f0d6ad !important;
     box-shadow: 0 0 10px rgba(201, 156, 95, .25) !important;
+}
+
+/* ---- extension's own settings entry: deliberately NOT scoped to
+   body.gnl-theme-active, unlike everything above. The Extensions list is
+   visible from any chat, not just this card's, and the "apply globally"
+   toggle inside this block is specifically how you'd turn the theme on
+   *without* being in that chat - it needs to look distinct even when the
+   theme is otherwise inactive, or it's indistinguishable from every other
+   extension's row in that list. ---- */
+#gnl_theme_settings .inline-drawer-header {
+    background: linear-gradient(180deg, #1b1017, #0c0709);
+    border: 1px solid #a97945;
+    border-radius: 6px;
+    padding: 6px 10px;
+    color: #efe2ce;
+}
+#gnl_theme_settings .inline-drawer-content {
+    border: 1px solid rgba(169, 121, 69, .4);
+    border-top: none;
+    border-radius: 0 0 6px 6px;
+    padding: 8px 10px;
+    background: #160e16;
 }
