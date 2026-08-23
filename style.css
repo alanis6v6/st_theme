@@ -16,6 +16,11 @@ body.gnl-theme-active {
     --gnl-text: #efe2ce;
     --gnl-text-dim: #cbb9aa;
     --gnl-wine: #6f293f;
+    /* translucent stand-in for --gnl-bg, used on #sheld/#chat instead of a
+       flat opaque fill so ST's own backdrop-filter blur can show a soft,
+       out-of-focus wash of the page's background photo through the panel -
+       see the #sheld/#chat rules below for why. */
+    --gnl-bg-glass: color-mix(in srgb, var(--gnl-bg) 90%, transparent);
 
     /* --sheldWidth is set as an inline style on <html> by ST's own "chat
        width" slider (power-user.js). A plain declaration here still wins
@@ -84,6 +89,27 @@ body.gnl-theme-active .stmb-jobs-panel-header strong {
 html:has(> body.gnl-theme-active),
 body.gnl-theme-active {
     background-color: var(--gnl-bg) !important;
+}
+
+/* ---- ambient backdrop: SillyTavern paints the user's chosen background
+   photo on #bg1 (position:absolute, z-index:-1) completely flat, with no
+   relationship to this theme's palette. On a wide viewport #sheld tops out
+   at 900px, so the photo shows bare down both sides - it reads as a second,
+   unrelated element instead of the room the gold-framed card sits in. This
+   fixed, full-viewport wash sits just above #bg1 but well below #sheld
+   (z-index 30) and every other interactive layer, darkening and warming the
+   photo toward the edges - same near-black/wine the frame itself uses - so
+   the exposed margins read as "the dim room around a lit card" rather than
+   a disconnected picture. pointer-events:none keeps it fully click-through. */
+body.gnl-theme-active::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background:
+        radial-gradient(ellipse 70% 65% at 50% 42%, transparent 0%, transparent 40%, rgba(12, 7, 9, .55) 78%, rgba(12, 7, 9, .85) 100%),
+        linear-gradient(rgba(18, 9, 12, .35), rgba(12, 7, 9, .5));
 }
 
 /* ---- top icon rows: the drawer-icon toolbar (the "plug" row, #top-bar)
@@ -296,8 +322,16 @@ body.gnl-theme-active .stmb-jobs-row {
 body.gnl-theme-active #sheld {
     border: 2px solid var(--gnl-gold) !important;
     border-radius: 6px;
-    box-shadow: 0 10px 30px rgba(14, 4, 12, .35) !important;
-    background-color: var(--gnl-bg) !important;
+    /* the drop shadow bleeds much further out than a typical card shadow on
+       purpose - it's the visual bridge between the frame's hard gold edge
+       and the vignette above, so the two don't meet as an abrupt seam. */
+    box-shadow:
+        0 10px 30px rgba(14, 4, 12, .35),
+        0 0 90px 20px rgba(111, 41, 63, .35),
+        0 0 160px 60px rgba(12, 7, 9, .55) !important;
+    background-color: var(--gnl-bg-glass) !important;
+    backdrop-filter: blur(var(--SmartThemeBlurStrength, 10px));
+    -webkit-backdrop-filter: blur(var(--SmartThemeBlurStrength, 10px));
 }
 
 /* ---- #chat: the card's gold double-ring frame (per the .rt-frame rules
@@ -315,7 +349,7 @@ body.gnl-theme-active #sheld {
 body.gnl-theme-active #chat {
     padding: clamp(16px, 2.6vw, 30px) !important;
     box-sizing: border-box !important;
-    background-color: var(--gnl-bg) !important;
+    background-color: var(--gnl-bg-glass) !important;
     /* two-tone inset ring standing in for the card's separate hairline +
        double-line: box-shadow can't leave a gap between rings the way two
        separate ::before/::after borders could, so instead each shadow
