@@ -245,6 +245,33 @@ body.gnl-theme-active #top_chat_stmb_jobs {
 body.gnl-theme-active #top_chat_stmb_jobs .stmb-jobs-drawer-title {
     color: var(--gnl-metal-bright) !important;
 }
+/* Collapsible: index.js adds a chevron to the panel header and toggles
+   .gnl-jobs-collapsed on click (Memory Books' own panel has no built-in
+   collapse - this is purely a CSS/JS addition on top of its existing
+   markup, hiding the action buttons and job rows while keeping the
+   header/summary visible). */
+body.gnl-theme-active #top_chat_stmb_jobs .stmb-jobs-panel-header {
+    position: relative;
+    cursor: pointer;
+    padding-right: 24px;
+}
+body.gnl-theme-active .gnl-jobs-toggle {
+    position: absolute;
+    top: 2px;
+    right: 0;
+    color: var(--gnl-metal-line);
+    transition: transform .2s ease, color .2s ease;
+}
+body.gnl-theme-active #top_chat_stmb_jobs .stmb-jobs-panel-header:hover .gnl-jobs-toggle {
+    color: var(--gnl-metal-bright);
+}
+body.gnl-theme-active #top_chat_stmb_jobs.gnl-jobs-collapsed .gnl-jobs-toggle {
+    transform: rotate(-90deg);
+}
+body.gnl-theme-active #top_chat_stmb_jobs.gnl-jobs-collapsed .stmb-jobs-actions,
+body.gnl-theme-active #top_chat_stmb_jobs.gnl-jobs-collapsed .stmb-jobs-rows {
+    display: none !important;
+}
 body.gnl-theme-active #top_chat_stmb_jobs .menu_button {
     background: var(--gnl-metal-panel) !important;
     border: 1px solid var(--gnl-metal-line) !important;
@@ -366,10 +393,11 @@ body.gnl-theme-active #send_form {
 }
 body.gnl-theme-active #send_textarea {
     background: var(--gnl-panel) !important;
-    border: 1px solid var(--gnl-gold) !important;
+    border: 2px solid var(--gnl-gold) !important;
     border-radius: 10px;
-    box-shadow: inset 0 0 0 1px rgba(184, 137, 78, .2) !important;
-    padding: 10px 14px !important;
+    box-shadow: inset 0 0 0 1px rgba(184, 137, 78, .25) !important;
+    padding: 14px 16px !important;
+    min-height: 3.4em !important;
     color: var(--gnl-text) !important;
     caret-color: var(--gnl-gold-bright);
 }
@@ -468,18 +496,19 @@ body.gnl-theme-active .qr--button:hover {
    toggle inside this block is specifically how you'd turn the theme on
    *without* being in that chat - it needs to look distinct even when the
    theme is otherwise inactive, or it's indistinguishable from every other
-   extension's row in that list. ---- */
+   extension's row in that list.
+   Only the border/text color are touched here - the previous version also
+   set `background` and `border-radius`, which replaced ST's own native
+   chip shape for these rows (the dark pill with the diagonal folded
+   corner every other entry in the list has) with a flat rectangle, so
+   this row looked like a different kind of thing instead of the same kind
+   of thing in a different color. Leaving background/shape alone keeps it
+   visually part of the same list. ---- */
 #gnl_theme_settings .inline-drawer-header {
-    background: linear-gradient(180deg, #1b1017, #0c0709);
     border: 1px solid #a97945;
-    border-radius: 6px;
-    padding: 6px 10px;
     color: #efe2ce;
 }
 #gnl_theme_settings .inline-drawer-content {
     border: 1px solid rgba(169, 121, 69, .4);
     border-top: none;
-    border-radius: 0 0 6px 6px;
-    padding: 8px 10px;
-    background: #160e16;
 }

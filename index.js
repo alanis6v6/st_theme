@@ -35,7 +35,7 @@
     // re-fetches index.js on "update extension" - the <link> href never
     // changed, so nothing tells the browser the file is stale. Appending
     // ?v=VERSION to that <link> forces a real re-fetch.
-    const VERSION = '1.5.0';
+    const VERSION = '1.6.0';
 
     function getContext() {
         try {
@@ -133,6 +133,32 @@
         return true;
     }
 
+    // Memory Books' own job panel (#top_chat_stmb_jobs) has no built-in
+    // collapse. This adds one on top of its existing markup: a chevron in
+    // the header, toggling a class that style.css uses to hide the action
+    // buttons and job rows while leaving the header/summary visible. The
+    // panel is created lazily by Memory Books (only once its jobs feature
+    // initializes), so this is re-checked on the same poll as
+    // applyThemeState rather than run once - it's a no-op once already
+    // enhanced (guarded by the data-gnl-enhanced marker).
+    function enhanceJobsPanel() {
+        try {
+            const panel = document.getElementById('top_chat_stmb_jobs');
+            if (!panel) return;
+            const header = panel.querySelector('.stmb-jobs-panel-header');
+            if (!header || header.dataset.gnlEnhanced) return;
+            header.dataset.gnlEnhanced = '1';
+            const toggle = document.createElement('i');
+            toggle.className = 'fa-solid fa-chevron-down gnl-jobs-toggle';
+            header.appendChild(toggle);
+            header.addEventListener('click', () => {
+                panel.classList.toggle('gnl-jobs-collapsed');
+            });
+        } catch (err) {
+            console.error('[gnl-theme] failed to enhance jobs panel', err);
+        }
+    }
+
     function hookEvents() {
         try {
             const ctx = getContext();
@@ -148,14 +174,20 @@
         // Safety net: whatever event does or doesn't fire on this
         // particular SillyTavern build, this guarantees the class is never
         // wrong for more than a second - the same belt-and-braces polling
-        // st-brume uses for its own live state.
-        setInterval(applyThemeState, 1000);
+        // st-brume uses for its own live state. Also covers enhanceJobsPanel,
+        // which has no event to hook at all (Memory Books doesn't announce
+        // when its panel gets created).
+        setInterval(() => {
+            applyThemeState();
+            enhanceJobsPanel();
+        }, 1000);
     }
 
     function init() {
         bustStyleCache();
         hookEvents();
         applyThemeState();
+        enhanceJobsPanel();
         // The extensions settings container isn't always mounted yet the
         // moment this script first runs - retry briefly rather than
         // silently giving up on ever showing the "apply globally" toggle.
