@@ -476,6 +476,127 @@ body.gnl-theme-active #send_but {
     color: var(--gnl-gold-bright) !important;
 }
 
+/* ---- welcome / recent chats: treat the landing state as a light editorial
+   index rather than another boxed message.  The version sits in its own row
+   at the upper left; the conversation index below uses generous, individual
+   entries with only a quiet divider, preserving all of ST's actions. ---- */
+body.gnl-theme-active #chat .welcomePanel,
+body.gnl-theme-active.bubblechat #chat .welcomePanel {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    gap: clamp(14px, 2vw, 22px) !important;
+    padding: clamp(8px, 1.4vw, 16px) clamp(12px, 2vw, 22px) !important;
+    margin: 0 !important;
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+}
+body.gnl-theme-active #chat .welcomePanel .welcomeHeaderTitle {
+    flex: 0 0 auto !important;
+    width: 100% !important;
+    gap: 9px !important;
+    justify-content: flex-start !important;
+}
+body.gnl-theme-active #chat .welcomePanel .welcomeHeaderLogo {
+    width: 34px !important;
+    height: 34px !important;
+}
+body.gnl-theme-active #chat .welcomePanel .welcomeHeaderVersionDisplay {
+    flex-grow: 0 !important;
+    font-size: clamp(1.2rem, 2.1vw, 1.65rem) !important;
+    font-weight: 600 !important;
+    letter-spacing: .02em;
+}
+body.gnl-theme-active #chat .welcomePanel .welcomeHeader {
+    width: 100% !important;
+    align-items: center !important;
+    gap: 18px !important;
+}
+body.gnl-theme-active #chat .welcomePanel .recentChatsTitle {
+    flex-grow: 0 !important;
+    font-size: clamp(1rem, 1.5vw, 1.2rem) !important;
+    letter-spacing: .08em;
+}
+body.gnl-theme-active #chat .welcomePanel .welcomeShortcuts {
+    margin-left: auto;
+    gap: 8px !important;
+}
+body.gnl-theme-active #chat .welcomeRecent .recentChatList {
+    gap: clamp(12px, 1.8vw, 20px) !important;
+}
+body.gnl-theme-active #chat .welcomeRecent .recentChatList .recentChat {
+    min-height: clamp(76px, 9vw, 104px);
+    padding: clamp(10px, 1.6vw, 16px) 4px !important;
+    gap: clamp(14px, 2vw, 22px) !important;
+    background: transparent !important;
+    border: 0 !important;
+    border-bottom: 1px solid rgba(201, 156, 95, .22) !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+}
+body.gnl-theme-active #chat .welcomeRecent .recentChatList .recentChat:hover {
+    background: rgba(111, 41, 63, .14) !important;
+    border-bottom-color: rgba(201, 156, 95, .6) !important;
+}
+body.gnl-theme-active #chat .welcomeRecent .recentChatList .recentChat .avatar,
+body.gnl-theme-active #chat .welcomeRecent .recentChatList .recentChat .avatar img {
+    width: clamp(58px, 7vw, 82px) !important;
+    height: clamp(58px, 7vw, 82px) !important;
+}
+body.gnl-theme-active #chat .welcomeRecent .recentChatList .recentChat .avatar img {
+    display: block;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 1px solid rgba(201, 156, 95, .55);
+}
+body.gnl-theme-active #chat .welcomeRecent .recentChatList .recentChat .recentChatInfo {
+    align-self: center !important;
+    justify-content: center !important;
+}
+body.gnl-theme-active #chat .welcomeRecent .recentChatList .recentChat .chatNameContainer {
+    align-items: center !important;
+    font-size: clamp(1.15rem, 2vw, 1.5rem) !important;
+}
+body.gnl-theme-active #chat .welcomeRecent .recentChatList .recentChat .chatName {
+    overflow: visible !important;
+    text-overflow: clip !important;
+    white-space: normal !important;
+}
+/* The character card name is the useful landing-page label.  Hide the chat
+   filename and summary while leaving the date and action controls intact. */
+body.gnl-theme-active #chat .welcomeRecent .recentChatList .recentChat .chatName > span,
+body.gnl-theme-active #chat .welcomeRecent .recentChatList .recentChat .chatMessageContainer {
+    display: none !important;
+}
+body.gnl-theme-active #chat .welcomeRecent .recentChatList .recentChat .characterName {
+    color: var(--gnl-text) !important;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+/* The two lower floral SVGs belonged to the message frame, not the page
+   content.  Leave the subtle upper wash and double ring, but remove both
+   bottom ornaments for a cleaner outer page. */
+body.gnl-theme-active #chat {
+    background-image: radial-gradient(circle at 50% 0%, rgba(111, 41, 63, .16), transparent 55%) !important;
+    background-repeat: no-repeat !important;
+    background-position: 50% 0% !important;
+    background-size: auto !important;
+}
+
+/* Nudge the whole composer row down while reserving room inside the shell,
+   so its gold outline is never clipped by the outer frame. */
+body.gnl-theme-active #sheld {
+    box-sizing: border-box !important;
+    padding-bottom: clamp(8px, 1.2vw, 14px) !important;
+}
+body.gnl-theme-active #form_sheld {
+    margin: clamp(10px, 1.5vw, 16px) auto 0 !important;
+    position: relative;
+    top: clamp(4px, .7vw, 8px);
+}
+
 /* ---- broader chrome: popups, generic buttons, and generic text inputs
    pick up the same gold-line-on-wine palette so opening any panel while
    this theme is active still reads as the same object, not a sudden drop
