@@ -35,7 +35,7 @@
     // re-fetches index.js on "update extension" - the <link> href never
     // changed, so nothing tells the browser the file is stale. Appending
     // ?v=VERSION to that <link> forces a real re-fetch.
-    const VERSION = '1.8.0';
+    const VERSION = '1.9.0';
 
     function getContext() {
         try {
