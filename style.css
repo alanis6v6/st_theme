@@ -40,7 +40,12 @@ body.gnl-theme-active {
        nearly-900px-wide frame. */
     --gnl-frame-inset-1: clamp(8px, 1.4vw, 16px);
     --gnl-frame-inset-2: clamp(13px, 2.1vw, 24px);
-    --gnl-frame-corner: clamp(34px, 5.2vw, 64px);
+    /* 1.5x the original clamp(34px,5.2vw,64px) - the bottom-corner florals
+       read as too small at the old size. The inset stays put (it anchors
+       the flower's own bottom-left/bottom-right corner to #chat's edge),
+       so growing this just lets the artwork reach further into the frame
+       instead of shifting its anchor point. */
+    --gnl-frame-corner: clamp(51px, 7.8vw, 96px);
 
     /* A second, cooler "metal" palette (chrome/steel rather than gold-on-
        wine) reserved for transient utility panels that need to read as
@@ -414,7 +419,19 @@ body.gnl-theme-active .rt-wheel-section {
    to "a clearly-boxed message field, with plain unboxed icon buttons
    floating around it" - closer to the card's own restrained, uncluttered
    look, and it makes the text field itself the one obvious thing to click
-   into instead of it blending into a bigger panel. ---- */
+   into instead of it blending into a bigger panel.
+   ST's own #form_sheld/#send_form are both width:100% with zero padding
+   from #sheld, so #send_textarea's own gold border used to land flush
+   against #sheld's outer gold border on the left/right/bottom - the two
+   overlapped with no gap, so the input's frame never read as its own
+   complete rectangle. #chat already insets its content from #sheld's edge
+   via padding; giving the input row a matching inset here (reduced width +
+   auto margins, plus a bit of breathing room below) lets its border render
+   whole. ---- */
+body.gnl-theme-active #form_sheld {
+    width: calc(100% - clamp(24px, 4vw, 40px)) !important;
+    margin: 0 auto clamp(10px, 1.6vw, 16px) auto !important;
+}
 body.gnl-theme-active #send_form {
     background: transparent !important;
     border: none !important;
