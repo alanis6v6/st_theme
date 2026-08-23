@@ -40,12 +40,12 @@ body.gnl-theme-active {
        nearly-900px-wide frame. */
     --gnl-frame-inset-1: clamp(8px, 1.4vw, 16px);
     --gnl-frame-inset-2: clamp(13px, 2.1vw, 24px);
-    /* 2.5x the prior clamp(51px,7.8vw,96px) - the bottom-corner florals
-       read as too small even after the earlier 1.5x pass. The inset stays
+    /* 1.5x the prior clamp(128px,19.5vw,240px) - the bottom-corner florals
+       read as too small even after the earlier 2.5x pass. The inset stays
        put (it anchors the flower's own bottom-left/bottom-right corner to
        #chat's edge), so growing this just lets the artwork reach further
        into the frame instead of shifting its anchor point. */
-    --gnl-frame-corner: clamp(128px, 19.5vw, 240px);
+    --gnl-frame-corner: clamp(192px, 29.3vw, 360px);
 
     /* A second, cooler "metal" palette (chrome/steel rather than gold-on-
        wine) reserved for transient utility panels that need to read as

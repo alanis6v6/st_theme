@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════
-   性別不是限制主題 — scopes the theme CSS to only this card's chat.
+   Gilded Desire — scopes the theme CSS to only this card's chat.
 
    The stylesheet in style.css is loaded globally the moment this extension
    is enabled (that's how SillyTavern's `manifest.css` loading works), so
@@ -26,7 +26,7 @@
 (() => {
     'use strict';
 
-    const TARGET_CHARACTER_NAME = '性別不是限制，性吸引力才是';
+    const TARGET_CHARACTER_NAME = '風停之前，誰先說愛我';
     const THEME_CLASS = 'gnl-theme-active';
     const SETTINGS_KEY = 'gnl_theme';
     // Bump this alongside manifest.json's version whenever style.css
@@ -35,7 +35,7 @@
     // re-fetches index.js on "update extension" - the <link> href never
     // changed, so nothing tells the browser the file is stale. Appending
     // ?v=VERSION to that <link> forces a real re-fetch.
-    const VERSION = '1.9.0';
+    const VERSION = '1.10.0';
 
     function getContext() {
         try {
@@ -111,7 +111,7 @@
         wrapper.innerHTML =
             '<div class="inline-drawer">' +
             '  <div class="inline-drawer-toggle inline-drawer-header">' +
-            '    <b>性別不是限制主題</b>' +
+            '    <b>Gilded Desire</b>' +
             '    <div class="inline-drawer-icon fa-solid fa-circle-chevron-down down"></div>' +
             '  </div>' +
             '  <div class="inline-drawer-content">' +
